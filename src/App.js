@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { Row, Container, Card } from "react-bootstrap";
+import { Row, Container, Alert, Toast } from "react-bootstrap";
 
 import './App.css';
 
@@ -20,8 +20,22 @@ export default function App() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState("NA");
 
+  const [errorShow, setErrorShow] = useState(false);
+
   const { version, championSquareAssets, itemSquareAssets, profileIconAssets } = useFetchAPIAssets();
-  const { summonerData, summonerMatchData } = useFetchSummonerData(summonerName, selectedRegion, isSubmitted);
+  const { summonerData, summonerMatchData, summonerDataError } = useFetchSummonerData(summonerName, selectedRegion, isSubmitted);
+
+  const errorMessage = msg => {
+    setErrorShow(true);
+
+    return (
+      <Toast show={errorShow} onClose={() => setErrorShow(!errorShow)}>
+        <Toast.Header><strong>Error</strong></Toast.Header>
+        <Toast.Body>{msg}</Toast.Body>
+      </Toast>
+    )
+  }
+
 
   return (
     <>
@@ -34,36 +48,35 @@ export default function App() {
 
       <br></br>
 
-      <Container>
-        <Row>
-          {summonerData ?
+      {/* {summonerDataError.length != 0 ? errorMessage(summonerDataError) : <></>} */}
+
+      {summonerMatchData ?
+        <Container>
+          <Row>
             <SummonerStats
               summonerData={summonerData}
+              summonerMatchData={summonerMatchData}
               profileIconAssets={profileIconAssets}
             />
-            :
-            <Card>
-              <Card.Body><strong>Enter summoner name...</strong></Card.Body>
-            </Card>
-          }
-        </Row>
+          </Row>
 
-        <br></br>
-
-        <Row>
-          {summonerMatchData ?
+          <Row>
             <SummonerMatchHistory
               summonerMatchData={summonerMatchData}
               summonerData={summonerData}
               championSquareAssets={championSquareAssets}
               itemSquareAssets={itemSquareAssets} />
-            :
-            <Card>
-              <Card.Body><strong>Enter summoner name...</strong></Card.Body>
-            </Card>
-          }
-        </Row>
-      </Container>
+          </Row>
+        </Container>
+        :
+        <Container>
+          <Row>
+            <Alert variant='dark'>
+              <Alert.Heading><strong>Type in you summoner name.</strong></Alert.Heading>
+            </Alert>
+          </Row>
+        </Container>
+      }
     </>
   );
 }

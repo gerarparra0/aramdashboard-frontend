@@ -65,6 +65,10 @@ export default function SummonerMatchHistory({ summonerMatchData, summonerData, 
                             {/* KDA and items*/}
                             <Col>
                                 <Row>
+
+                                </Row>
+
+                                <Row>
                                     {items.map((i, idx) => (
                                         <Col key={idx}>
                                             <Figure>
